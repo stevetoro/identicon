@@ -7,6 +7,7 @@ defmodule Identicon do
     |> set_identicon_color
     |> build_grid
     |> build_pixel_map
+    |> draw_identicon
   end
 
   defp generate_hash(input) do
@@ -52,4 +53,16 @@ defmodule Identicon do
 
     {top_left, bottom_right}
   end
+
+  defp draw_identicon(%Identicon{color: color, pixel_map: pixel_map}) do
+    image = :egd.create(250, 250)
+    fill = :egd.color(color)
+
+    Enum.each pixel_map, fn({start, stop}) ->
+      :egd.filledRectangle(image, start, stop, fill)
+    end
+
+    :egd.render(image)
+  end
+
 end
