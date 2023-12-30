@@ -10,6 +10,10 @@ defmodule Identicon do
     |> draw_identicon
   end
 
+  def save(identicon, file_name) do
+    File.write("#{file_name}.png", identicon)
+  end
+
   defp generate_hash(input) do
     :crypto.hash(:md5, input)
     |> :binary.bin_to_list()
