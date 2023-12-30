@@ -1,0 +1,2 @@
+defmodule IdenticonTest do
+end
