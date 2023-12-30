@@ -11,11 +11,7 @@ defmodule Identicon do
   defp generate_hash(input) do
     :crypto.hash(:md5, input)
     |> :binary.bin_to_list()
-    |> set_identicon_hash
-  end
-
-  defp set_identicon_hash(hashed_input) do
-    %Identicon{hash: hashed_input}
+    |> then(&%Identicon{hash: &1})
   end
 
   defp set_identicon_color(%Identicon{hash: [r, g, b | _]} = identicon) do
@@ -23,26 +19,20 @@ defmodule Identicon do
   end
 
   defp build_grid(%Identicon{hash: hash} = identicon) do
-    set_identicon_grid(
-      identicon,
-      hash
-      |> Enum.chunk_every(3, 3, :discard)
-      |> Enum.map(&mirror_row/1)
-      |> List.flatten()
-      |> Enum.with_index()
-      |> filter_odd_squares
-    )
-  end
-
-  defp set_identicon_grid(identicon, grid) do
-    %Identicon{identicon | grid: grid}
+    hash
+    |> Enum.chunk_every(3, 3, :discard)
+    |> Enum.map(&mirror_row/1)
+    |> List.flatten()
+    |> Enum.with_index()
+    |> Enum.filter(&odd_squares/1)
+    |> then(&%Identicon{identicon | grid: &1})
   end
 
   defp mirror_row([first, second | _] = row) do
     row ++ [second, first]
   end
 
-  defp filter_odd_squares(grid) do
-    Enum.filter(grid, fn {num, _index} -> rem(num, 2) == 0 end)
+  defp odd_squares({num, _index}) do
+    rem(num, 2) == 0
   end
 end
